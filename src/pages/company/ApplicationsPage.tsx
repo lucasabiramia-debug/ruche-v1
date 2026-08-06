@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { getApplicationsByMission, reviewApplication } from '@/services/applications'
@@ -20,6 +21,7 @@ interface Application {
 }
 
 export function CompanyApplicationsPage() {
+  const navigate = useNavigate()
   const { user } = useAuth()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [reviewingId, setReviewingId] = useState<string | null>(null)
@@ -105,13 +107,21 @@ export function CompanyApplicationsPage() {
                   </div>
                 </div>
 
-                <span
-                  className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(
-                    application.status,
-                  )}`}
-                >
-                  {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
-                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => navigate(`/company/creators/${application.creator_id}`)}
+                    className="rounded bg-blue-50 px-3 py-1 text-sm text-blue-600 hover:bg-blue-100"
+                  >
+                    Voir profil
+                  </button>
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(
+                      application.status,
+                    )}`}
+                  >
+                    {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                  </span>
+                </div>
               </div>
 
               <div className="mt-4 grid gap-4 sm:grid-cols-3">

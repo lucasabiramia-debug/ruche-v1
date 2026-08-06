@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery } from '@tanstack/react-query'
 import { getAssignmentsByCreator } from '@/services/assignments'
@@ -24,6 +25,7 @@ interface Assignment {
 }
 
 export function CreatorAssignmentsPage() {
+  const navigate = useNavigate()
   const { user } = useAuth()
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -144,7 +146,10 @@ export function CreatorAssignmentsPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-900">Actions disponibles</p>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        <button className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">
+                        <button
+                          onClick={() => navigate(`/creator/assignments/${assignment.id}/brief`)}
+                          className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
+                        >
                           Voir le brief
                         </button>
                         <button className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700">

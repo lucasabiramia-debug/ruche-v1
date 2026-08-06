@@ -19,6 +19,7 @@ import { CreatorMissionsPage } from '@/pages/creator/MissionsPage'
 import { MissionDetailPage } from '@/pages/creator/MissionDetailPage'
 import { CreatorAssignmentsPage } from '@/pages/creator/AssignmentsPage'
 import { CreatorEarningsPage } from '@/pages/creator/EarningsPage'
+import { BriefViewPage } from '@/pages/creator/BriefViewPage'
 
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
@@ -87,6 +88,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CreatorAssignmentsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/assignments/:assignmentId/brief"
+                element={
+                  <ProtectedRoute>
+                    <BriefViewPage />
                   </ProtectedRoute>
                 }
               />
