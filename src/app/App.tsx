@@ -28,6 +28,7 @@ import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
 import { InvitationsPage } from '@/pages/company/InvitationsPage'
 import { CompanyCampaignsPage } from '@/pages/company/CampaignsPage'
 import { CampaignDetailPage } from '@/pages/company/CampaignDetailPage'
+import { CampaignStudioPage } from '@/pages/company/CampaignStudioPage'
 import { CompanyApplicationsPage } from '@/pages/company/ApplicationsPage'
 import { CreatorProfilePage } from '@/pages/company/CreatorProfilePage'
 
@@ -143,6 +144,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CompanyCampaignsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/company/campaigns/new"
+                element={
+                  <ProtectedRoute>
+                    <CampaignStudioPage />
                   </ProtectedRoute>
                 }
               />

@@ -90,7 +90,9 @@ export async function listApplications() {
         title,
         campaigns (
           id,
-          title
+          title,
+          objective,
+          target_audience
         )
       ),
       creator_profiles (

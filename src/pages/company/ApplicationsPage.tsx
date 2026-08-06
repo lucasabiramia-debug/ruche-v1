@@ -17,7 +17,12 @@ interface Application {
   missions?: {
     id: string
     title: string
-    campaigns?: { id: string; title: string }
+    campaigns?: {
+      id: string
+      title: string
+      objective?: string
+      target_audience?: string
+    }
   }
   creator_profiles?: {
     id: string
@@ -43,12 +48,16 @@ export function CompanyApplicationsPage() {
       status: 'approved' | 'rejected'
     }) => {
       if (data.status === 'approved') {
-        // One click: approve + create assignment + create pending payment
+        // One click: approve + assignment + pending payment + auto-drafted brief
         return approveApplicationAndAssign({
           applicationId: data.application.id,
           missionId: data.application.mission_id,
           creatorId: data.application.creator_id,
           proposedPrice: data.application.proposed_price,
+          missionTitle: data.application.missions?.title,
+          campaignTitle: data.application.missions?.campaigns?.title,
+          campaignObjective: data.application.missions?.campaigns?.objective,
+          targetAudience: data.application.missions?.campaigns?.target_audience,
         })
       }
       return reviewApplication(data.application.id, 'rejected', rejectionReason || undefined)
