@@ -1,26 +1,56 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createBriefSchema } from '@/schemas/collaboration'
+import { z } from 'zod'
+import type { CreateBriefInput } from '@/schemas/collaboration'
+
+// Form-level schema: mentions/claims are edited as one-per-line text,
+// converted to arrays before reaching the service layer
+const briefFormSchema = z.object({
+  title: z.string().min(5, 'Titre minimum 5 caractères').max(200, 'Titre max 200 caractères'),
+  instructions: z.string().min(20, 'Instructions minimum 20 caractères').max(5000, 'Max 5000 caractères'),
+  mandatoryMentions: z.string().optional(),
+  prohibitedClaims: z.string().optional(),
+  trackingCode: z.string().optional(),
+  trackingUrl: z.string().url('URL valide requise').optional().or(z.literal('')),
+  usageRights: z.string().optional(),
+})
+
+type BriefFormValues = z.infer<typeof briefFormSchema>
+
+const splitLines = (value?: string) =>
+  value
+    ? value
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+    : undefined
 
 interface BriefFormProps {
   assignmentId: string
-  onSubmit: (data: any) => Promise<void>
+  onSubmit: (data: CreateBriefInput) => Promise<void>
   isLoading?: boolean
-  initialData?: any
+  initialData?: Partial<BriefFormValues>
 }
 
-export function BriefForm({ assignmentId, onSubmit, isLoading, initialData }: BriefFormProps) {
+export function BriefForm({ onSubmit, isLoading, initialData }: BriefFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(createBriefSchema),
+  } = useForm<BriefFormValues>({
+    resolver: zodResolver(briefFormSchema),
     defaultValues: initialData,
   })
 
+  const submit = (values: BriefFormValues) =>
+    onSubmit({
+      ...values,
+      mandatoryMentions: splitLines(values.mandatoryMentions),
+      prohibitedClaims: splitLines(values.prohibitedClaims),
+    })
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(submit)} className="space-y-6">
       <div>
         <label className="block text-sm font-medium">Titre du brief</label>
         <input

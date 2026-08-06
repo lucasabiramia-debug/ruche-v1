@@ -1,20 +1,20 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { submitProofSchema } from '@/schemas/collaboration'
+import { submitProofSchema, type SubmitProofInput } from '@/schemas/collaboration'
 
 interface ProofSubmissionFormProps {
   assignmentId: string
-  onSubmit: (data: any) => Promise<void>
+  onSubmit: (data: SubmitProofInput) => Promise<void>
   isLoading?: boolean
 }
 
-export function ProofSubmissionForm({ assignmentId, onSubmit, isLoading }: ProofSubmissionFormProps) {
+export function ProofSubmissionForm({ onSubmit, isLoading }: ProofSubmissionFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<SubmitProofInput>({
     resolver: zodResolver(submitProofSchema),
   })
 

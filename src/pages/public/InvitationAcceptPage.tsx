@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { acceptInvitationSchema } from '@/schemas/invitations'
+import { acceptInvitationSchema, type AcceptInvitationInput } from '@/schemas/invitations'
 import { verifyInvitationToken, acceptInvitation } from '@/services/invitations'
 import { supabase } from '@/integrations/supabase/client'
 
@@ -17,8 +17,9 @@ export function InvitationAcceptPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<AcceptInvitationInput>({
     resolver: zodResolver(acceptInvitationSchema),
+    defaultValues: { token: token ?? '' },
   })
 
   // Verify invitation token on mount
@@ -40,7 +41,7 @@ export function InvitationAcceptPage() {
       })
   }, [token])
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: AcceptInvitationInput) => {
     if (!token) return
 
     try {

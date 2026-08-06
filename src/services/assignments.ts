@@ -53,7 +53,9 @@ export async function getAssignmentsByCreator(creatorId: string) {
 
   if (error) throw error
 
-  return data
+  // Nested relations are single objects at runtime; the untyped select-string
+  // parser infers them as arrays, so the cast lets callers type the real shape
+  return data as any[]
 }
 
 export async function getAssignmentsByMission(missionId: string) {

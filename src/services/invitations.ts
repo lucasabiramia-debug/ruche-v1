@@ -1,11 +1,21 @@
 import { supabase } from '@/integrations/supabase/client'
 import type { CreateInvitationInput } from '@/schemas/invitations'
-import crypto from 'crypto'
 
-export async function generateInvitationToken(email: string): Promise<{ token: string; token_hash: string }> {
+// Web Crypto (browser-safe) — the Node 'crypto' module is not available in Vite builds
+const toHex = (bytes: Uint8Array) =>
+  Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))
+  return toHex(new Uint8Array(digest))
+}
+
+export async function generateInvitationToken(): Promise<{ token: string; token_hash: string }> {
   // Generate cryptographically secure random token
-  const token = crypto.randomBytes(32).toString('hex')
-  const token_hash = crypto.createHash('sha256').update(token).digest('hex')
+  const token = toHex(crypto.getRandomValues(new Uint8Array(32)))
+  const token_hash = await sha256Hex(token)
   return { token, token_hash }
 }
 
@@ -14,7 +24,7 @@ export async function createInvitation(
   input: CreateInvitationInput,
   invitedByUserId: string,
 ) {
-  const { token, token_hash } = await generateInvitationToken(input.email)
+  const { token, token_hash } = await generateInvitationToken()
 
   const { data, error } = await supabase
     .from('invitations')
@@ -37,7 +47,7 @@ export async function createInvitation(
 }
 
 export async function verifyInvitationToken(token: string) {
-  const token_hash = crypto.createHash('sha256').update(token).digest('hex')
+  const token_hash = await sha256Hex(token)
 
   const { data, error } = await supabase
     .from('invitations')
@@ -56,7 +66,7 @@ export async function verifyInvitationToken(token: string) {
 }
 
 export async function acceptInvitation(token: string, userId: string) {
-  const token_hash = crypto.createHash('sha256').update(token).digest('hex')
+  const token_hash = await sha256Hex(token)
 
   const { data, error } = await supabase
     .from('invitations')

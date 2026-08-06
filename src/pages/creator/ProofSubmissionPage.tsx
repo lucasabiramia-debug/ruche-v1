@@ -1,7 +1,10 @@
-import { useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/useAuth'
 import { getAssignmentById } from '@/services/assignments'
+import { submitProof } from '@/services/proofs'
 import { ProofSubmissionForm } from '@/components/ProofSubmissionForm'
+import type { SubmitProofInput } from '@/schemas/collaboration'
 
 interface Assignment {
   id: string
@@ -16,15 +19,33 @@ interface Assignment {
 
 export function ProofSubmissionPage() {
   const { assignmentId } = useParams<{ assignmentId: string }>()
+  const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const assignmentQuery = useQuery({
+    queryKey: ['assignment', assignmentId],
+    queryFn: () => getAssignmentById(assignmentId!),
+    enabled: !!assignmentId,
+  })
+
+  const submitMutation = useMutation({
+    mutationFn: (data: SubmitProofInput) =>
+      submitProof({
+        assignmentId: assignmentId!,
+        creatorId: user!.id,
+        proofType: data.proofType,
+        publicContentUrl: data.publicContentUrl || undefined,
+        filePath: data.filePath || undefined,
+        statisticsFilePath: data.statisticsFilePath || undefined,
+      }),
+    onSuccess: () => {
+      navigate('/creator/assignments')
+    },
+  })
 
   if (!assignmentId) {
     return <div>Assignment ID missing</div>
   }
-
-  const assignmentQuery = useQuery({
-    queryKey: ['assignment', assignmentId],
-    queryFn: () => getAssignmentById(assignmentId),
-  })
 
   const assignment = assignmentQuery.data as Assignment | undefined
 
@@ -77,7 +98,18 @@ export function ProofSubmissionPage() {
       {/* Submission Form */}
       <div className="rounded-lg bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Détails de la preuve</h2>
-        <ProofSubmissionForm assignmentId={assignmentId} />
+        <ProofSubmissionForm
+          assignmentId={assignmentId}
+          onSubmit={async (data) => {
+            await submitMutation.mutateAsync(data)
+          }}
+          isLoading={submitMutation.isPending}
+        />
+        {submitMutation.error && (
+          <div className="mt-4 rounded-lg bg-red-100 p-3 text-sm text-red-800">
+            Erreur lors de la soumission de la preuve
+          </div>
+        )}
       </div>
 
       {/* Info Box */}
