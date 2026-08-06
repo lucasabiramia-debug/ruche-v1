@@ -66,6 +66,15 @@ export function geocodeCity(location: string | null | undefined): GeoPoint | nul
   return null
 }
 
+/** Scans several free-text fields and returns the first city found. */
+export function geocodeFromTexts(texts: Array<string | null | undefined>): GeoPoint | null {
+  for (const text of texts) {
+    const point = geocodeCity(text)
+    if (point) return point
+  }
+  return null
+}
+
 /**
  * Deterministic small offset so several pins in the same city don't
  * overlap perfectly (seeded by an id string — stable across renders).

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { geocodeCity, jitter, toPins, FRANCE_CENTER } from './geo'
+import { geocodeCity, geocodeFromTexts, jitter, toPins, FRANCE_CENTER } from './geo'
 
 describe('geocodeCity', () => {
   it('matches a plain city name', () => {
@@ -19,6 +19,17 @@ describe('geocodeCity', () => {
     expect(geocodeCity('Petit village inconnu')).toBeNull()
     expect(geocodeCity(null)).toBeNull()
     expect(geocodeCity('')).toBeNull()
+  })
+})
+
+describe('geocodeFromTexts', () => {
+  it('returns the first city found across several fields', () => {
+    const point = geocodeFromTexts([null, 'Audience jeune', 'Étudiants à Rennes', 'Paris'])
+    expect(point).toEqual(geocodeCity('Rennes'))
+  })
+
+  it('returns null when no field mentions a city', () => {
+    expect(geocodeFromTexts(['Audience nationale', null, undefined])).toBeNull()
   })
 })
 

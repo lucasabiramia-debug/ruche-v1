@@ -4,6 +4,7 @@ import { AppNav } from '@/components/AppNav'
 const NAV_ITEMS = [
   { to: '/creator/dashboard', label: 'Tableau de bord' },
   { to: '/creator/missions', label: 'Missions' },
+  { to: '/creator/map', label: '🗺️ Radar' },
   { to: '/creator/assignments', label: 'Mes missions' },
   { to: '/creator/earnings', label: 'Revenus' },
 ]

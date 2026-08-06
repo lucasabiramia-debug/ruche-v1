@@ -34,10 +34,15 @@ import { CampaignStudioPage } from '@/pages/company/CampaignStudioPage'
 import { CompanyApplicationsPage } from '@/pages/company/ApplicationsPage'
 import { CreatorProfilePage } from '@/pages/company/CreatorProfilePage'
 
-// Leaflet is heavy — load the map only when the user opens it
+// Leaflet is heavy — load the maps only when the user opens them
 const CreatorsMapPage = lazy(() =>
   import('@/pages/company/CreatorsMapPage').then((m) => ({ default: m.CreatorsMapPage })),
 )
+const MissionsMapPage = lazy(() =>
+  import('@/pages/creator/MissionsMapPage').then((m) => ({ default: m.MissionsMapPage })),
+)
+
+const mapFallback = <div className="h-[60vh] animate-pulse rounded-2xl bg-gray-200"></div>
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +88,16 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CreatorMissionsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/map"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={mapFallback}>
+                      <MissionsMapPage />
+                    </Suspense>
                   </ProtectedRoute>
                 }
               />
@@ -190,9 +205,7 @@ export default function App() {
                 path="/company/map"
                 element={
                   <ProtectedRoute>
-                    <Suspense
-                      fallback={<div className="h-[70vh] animate-pulse rounded-2xl bg-gray-200"></div>}
-                    >
+                    <Suspense fallback={mapFallback}>
                       <CreatorsMapPage />
                     </Suspense>
                   </ProtectedRoute>
