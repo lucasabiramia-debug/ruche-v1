@@ -20,6 +20,7 @@ import { MissionDetailPage } from '@/pages/creator/MissionDetailPage'
 import { CreatorAssignmentsPage } from '@/pages/creator/AssignmentsPage'
 import { CreatorEarningsPage } from '@/pages/creator/EarningsPage'
 import { BriefViewPage } from '@/pages/creator/BriefViewPage'
+import { ProofSubmissionPage } from '@/pages/creator/ProofSubmissionPage'
 
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
@@ -96,6 +97,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <BriefViewPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/assignments/:assignmentId/proof"
+                element={
+                  <ProtectedRoute>
+                    <ProofSubmissionPage />
                   </ProtectedRoute>
                 }
               />

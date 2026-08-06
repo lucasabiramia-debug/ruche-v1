@@ -152,7 +152,10 @@ export function CreatorAssignmentsPage() {
                         >
                           Voir le brief
                         </button>
-                        <button className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700">
+                        <button
+                          onClick={() => navigate(`/creator/assignments/${assignment.id}/proof`)}
+                          className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
+                        >
                           Soumettre du contenu
                         </button>
                         <button className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">
