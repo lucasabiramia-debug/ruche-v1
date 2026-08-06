@@ -18,6 +18,7 @@ import { CreatorOnboardingPage } from '@/pages/creator/OnboardingPage'
 import { CreatorMissionsPage } from '@/pages/creator/MissionsPage'
 import { MissionDetailPage } from '@/pages/creator/MissionDetailPage'
 import { CreatorAssignmentsPage } from '@/pages/creator/AssignmentsPage'
+import { CreatorEarningsPage } from '@/pages/creator/EarningsPage'
 
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
@@ -84,6 +85,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CreatorAssignmentsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/earnings"
+                element={
+                  <ProtectedRoute>
+                    <CreatorEarningsPage />
                   </ProtectedRoute>
                 }
               />
