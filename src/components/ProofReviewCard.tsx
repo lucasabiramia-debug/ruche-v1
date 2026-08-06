@@ -21,13 +21,11 @@ interface ProofReviewCardProps {
 
 export function ProofReviewCard({ proof, onReviewed }: ProofReviewCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [reviewStatus, setReviewStatus] = useState<'approved' | 'rejected' | 'needs_revision' | null>(null)
 
   const reviewMutation = useMutation({
     mutationFn: (status: 'approved' | 'rejected' | 'needs_revision') =>
       reviewProof(proof.id, status),
     onSuccess: () => {
-      setReviewStatus(null)
       setIsExpanded(false)
       onReviewed?.()
     },

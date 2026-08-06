@@ -18,16 +18,17 @@ interface Brief {
 export function BriefViewPage() {
   const { assignmentId } = useParams<{ assignmentId: string }>()
 
-  if (!assignmentId) {
-    return <div>Assignment ID missing</div>
-  }
-
   const briefQuery = useQuery({
     queryKey: ['assignment-brief', assignmentId],
-    queryFn: () => getBriefByAssignment(assignmentId),
+    queryFn: () => getBriefByAssignment(assignmentId!),
+    enabled: !!assignmentId,
   })
 
   const brief = briefQuery.data as Brief | undefined
+
+  if (!assignmentId) {
+    return <div>Assignment ID missing</div>
+  }
 
   if (briefQuery.isLoading) {
     return (

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { getApplicationsByMission, reviewApplication } from '@/services/applications'
 
@@ -22,8 +21,6 @@ interface Application {
 
 export function CompanyApplicationsPage() {
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const [expandedId, setExpandedId] = useState<string | null>(null)
   const [reviewingId, setReviewingId] = useState<string | null>(null)
   const [rejectionReason, setRejectionReason] = useState('')
 

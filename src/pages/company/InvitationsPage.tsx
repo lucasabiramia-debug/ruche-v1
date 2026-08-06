@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useMutation } from '@tanstack/react-query'
 import { createInvitation } from '@/services/invitations'
-import { createInvitationSchema } from '@/schemas/invitations'
 
 export function InvitationsPage() {
   const { user, organizationId } = useAuth()

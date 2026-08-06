@@ -19,7 +19,7 @@ interface Campaign {
 
 export function CompanyCampaignsPage() {
   const navigate = useNavigate()
-  const { organizationId } = useAuth()
+  const { organizationId: _organizationId } = useAuth()
   const [filterStatus, setFilterStatus] = useState<string>('')
   const [search, setSearch] = useState('')
 

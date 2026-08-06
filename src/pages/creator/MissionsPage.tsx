@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { listMissions } from '@/services/missions'
-import { getApplicationsByCreator, createApplication, getApplicationByMissionAndCreator } from '@/services/applications'
+import { getApplicationsByCreator, createApplication } from '@/services/applications'
 import { MissionCard } from '@/components/MissionCard'
 
 interface ApplicationState {
@@ -16,7 +16,7 @@ interface ApplicationState {
 export function CreatorMissionsPage() {
   const { user } = useAuth()
   const [search, setSearch] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([])
+  const [categoryFilter, _setCategoryFilter] = useState<string[]>([])
   const [applicationState, setApplicationState] = useState<ApplicationState | null>(null)
   const [appliedMissions, setAppliedMissions] = useState<Set<string>>(new Set())
 

@@ -9,19 +9,21 @@ export function CampaignDetailPage() {
   const { campaignId } = useParams<{ campaignId: string }>()
   const [showMissionForm, setShowMissionForm] = useState(false)
 
-  if (!campaignId) {
-    return <div>Campaign ID missing</div>
-  }
-
   const campaignQuery = useQuery({
     queryKey: ['campaign', campaignId],
-    queryFn: () => getCampaignById(campaignId),
+    queryFn: () => getCampaignById(campaignId!),
+    enabled: !!campaignId,
   })
 
   const missionsQuery = useQuery({
     queryKey: ['campaign-missions', campaignId],
     queryFn: () => listMissions({ campaignId }),
+    enabled: !!campaignId,
   })
+
+  if (!campaignId) {
+    return <div>Campaign ID missing</div>
+  }
 
   const campaign = campaignQuery.data
   const missions = missionsQuery.data

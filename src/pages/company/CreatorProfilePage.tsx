@@ -22,12 +22,9 @@ interface CreatorProfile {
 export function CreatorProfilePage() {
   const { creatorId } = useParams<{ creatorId: string }>()
 
-  if (!creatorId) {
-    return <div>Creator ID missing</div>
-  }
-
   const profileQuery = useQuery({
     queryKey: ['creator-profile', creatorId],
+    enabled: !!creatorId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('creator_profiles')
@@ -58,6 +55,10 @@ export function CreatorProfilePage() {
   })
 
   const profile = profileQuery.data
+
+  if (!creatorId) {
+    return <div>Creator ID missing</div>
+  }
 
   const getTotalFollowers = () => {
     if (!profile?.platform_links) return 0

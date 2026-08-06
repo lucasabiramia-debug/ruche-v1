@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery } from '@tanstack/react-query'
 import { getPaymentsByCreator, getPaymentSummary } from '@/services/payments'

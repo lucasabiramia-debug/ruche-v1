@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { getMissionById } from '@/services/missions'
 import { getApplicationByMissionAndCreator, createApplication } from '@/services/applications'
-import { getBriefByAssignment } from '@/services/briefs'
 
 export function MissionDetailPage() {
   const { missionId } = useParams<{ missionId: string }>()
@@ -13,22 +12,18 @@ export function MissionDetailPage() {
   const [proposedPrice, setProposedPrice] = useState('')
   const [error, setError] = useState('')
 
-  if (!missionId || !user) {
-    navigate('/creator/missions')
-    return null
-  }
-
   // Fetch mission details
   const missionQuery = useQuery({
     queryKey: ['mission', missionId],
-    queryFn: () => getMissionById(missionId),
+    queryFn: () => getMissionById(missionId!),
+    enabled: !!missionId,
   })
 
   // Check if already applied
   const applicationQuery = useQuery({
-    queryKey: ['application-status', missionId, user.id],
-    queryFn: () => getApplicationByMissionAndCreator(missionId, user.id),
-    enabled: !!user.id,
+    queryKey: ['application-status', missionId, user?.id],
+    queryFn: () => getApplicationByMissionAndCreator(missionId!, user!.id),
+    enabled: !!missionId && !!user?.id,
   })
 
   // Create application mutation
@@ -54,6 +49,10 @@ export function MissionDetailPage() {
       return
     }
     createAppMutation.mutate(parseFloat(proposedPrice))
+  }
+
+  if (!missionId || !user) {
+    return <Navigate to="/creator/missions" replace />
   }
 
   if (missionQuery.isLoading) {
