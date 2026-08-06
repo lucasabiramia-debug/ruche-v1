@@ -24,7 +24,9 @@ import { CreatorEarningsPage } from '@/pages/creator/EarningsPage'
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
 import { InvitationsPage } from '@/pages/company/InvitationsPage'
 import { CompanyCampaignsPage } from '@/pages/company/CampaignsPage'
+import { CampaignDetailPage } from '@/pages/company/CampaignDetailPage'
 import { CompanyApplicationsPage } from '@/pages/company/ApplicationsPage'
+import { CreatorProfilePage } from '@/pages/company/CreatorProfilePage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -125,10 +127,26 @@ export default function App() {
                 }
               />
               <Route
+                path="/company/campaigns/:campaignId"
+                element={
+                  <ProtectedRoute>
+                    <CampaignDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/company/applications"
                 element={
                   <ProtectedRoute>
                     <CompanyApplicationsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/company/creators/:creatorId"
+                element={
+                  <ProtectedRoute>
+                    <CreatorProfilePage />
                   </ProtectedRoute>
                 }
               />
