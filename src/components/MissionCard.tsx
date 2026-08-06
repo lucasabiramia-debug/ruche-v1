@@ -21,6 +21,7 @@ interface MissionCardProps {
 }
 
 export function MissionCard({ mission, href, isApplied, onApplyClick }: MissionCardProps) {
+  const defaultHref = `/creator/missions/${mission.id}`
   const cardContent = (
     <div className="block rounded-lg border border-gray-200 p-6 hover:border-blue-400 hover:shadow-md transition-all">
       <div className="flex items-start justify-between">
@@ -72,9 +73,6 @@ export function MissionCard({ mission, href, isApplied, onApplyClick }: MissionC
     </div>
   )
 
-  if (href) {
-    return <Link to={href}>{cardContent}</Link>
-  }
-
-  return cardContent
+  const linkHref = href || defaultHref
+  return <Link to={linkHref}>{cardContent}</Link>
 }

@@ -16,6 +16,8 @@ import { InvitationAcceptPage } from '@/pages/public/InvitationAcceptPage'
 import { CreatorDashboardPage } from '@/pages/creator/DashboardPage'
 import { CreatorOnboardingPage } from '@/pages/creator/OnboardingPage'
 import { CreatorMissionsPage } from '@/pages/creator/MissionsPage'
+import { MissionDetailPage } from '@/pages/creator/MissionDetailPage'
+import { CreatorAssignmentsPage } from '@/pages/creator/AssignmentsPage'
 
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
@@ -64,6 +66,22 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CreatorMissionsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/missions/:missionId"
+                element={
+                  <ProtectedRoute>
+                    <MissionDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/assignments"
+                element={
+                  <ProtectedRoute>
+                    <CreatorAssignmentsPage />
                   </ProtectedRoute>
                 }
               />
