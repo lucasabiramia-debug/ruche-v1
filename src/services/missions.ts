@@ -88,7 +88,16 @@ export async function getMissionById(missionId: string) {
 export async function listCampaigns(filters?: { status?: string; search?: string }) {
   let query = supabase
     .from('campaigns')
-    .select('*')
+    .select(
+      `
+      *,
+      missions (
+        id,
+        title,
+        publication_status
+      )
+    `,
+    )
 
   if (filters?.status) {
     query = query.eq('status', filters.status)
