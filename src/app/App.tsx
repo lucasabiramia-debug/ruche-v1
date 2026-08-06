@@ -15,6 +15,7 @@ import { InvitationAcceptPage } from '@/pages/public/InvitationAcceptPage'
 // Pages - Creator
 import { CreatorDashboardPage } from '@/pages/creator/DashboardPage'
 import { CreatorOnboardingPage } from '@/pages/creator/OnboardingPage'
+import { CreatorMissionsPage } from '@/pages/creator/MissionsPage'
 
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
@@ -55,6 +56,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CreatorDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/missions"
+                element={
+                  <ProtectedRoute>
+                    <CreatorMissionsPage />
                   </ProtectedRoute>
                 }
               />
