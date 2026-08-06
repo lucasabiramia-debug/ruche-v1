@@ -16,5 +16,14 @@ export default defineConfig({
   build: {
     target: 'ES2020',
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          data: ['@tanstack/react-query', '@supabase/supabase-js'],
+          forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
+        },
+      },
+    },
   },
 })
