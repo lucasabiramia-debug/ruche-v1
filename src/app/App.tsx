@@ -6,12 +6,18 @@ import { PublicLayout } from '@/layouts/PublicLayout'
 import { CreatorLayout } from '@/layouts/CreatorLayout'
 import { CompanyLayout } from '@/layouts/CompanyLayout'
 
-// Pages
+// Pages - Public
 import { HomePage } from '@/pages/public/HomePage'
 import { SignInPage } from '@/pages/auth/SignInPage'
 import { SignUpPage } from '@/pages/auth/SignUpPage'
+import { InvitationAcceptPage } from '@/pages/public/InvitationAcceptPage'
+
+// Pages - Creator
 import { CreatorDashboardPage } from '@/pages/creator/DashboardPage'
+
+// Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
+import { InvitationsPage } from '@/pages/company/InvitationsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +36,7 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/auth/signin" element={<SignInPage />} />
               <Route path="/auth/signup" element={<SignUpPage />} />
+              <Route path="/invitation/:token" element={<InvitationAcceptPage />} />
             </Route>
 
             {/* Creator routes */}
@@ -51,6 +58,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CompanyDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/company/invitations"
+                element={
+                  <ProtectedRoute>
+                    <InvitationsPage />
                   </ProtectedRoute>
                 }
               />
