@@ -22,6 +22,8 @@ import { CreatorAssignmentsPage } from '@/pages/creator/AssignmentsPage'
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
 import { InvitationsPage } from '@/pages/company/InvitationsPage'
+import { CompanyCampaignsPage } from '@/pages/company/CampaignsPage'
+import { CompanyApplicationsPage } from '@/pages/company/ApplicationsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -102,6 +104,22 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <InvitationsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/company/campaigns"
+                element={
+                  <ProtectedRoute>
+                    <CompanyCampaignsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/company/applications"
+                element={
+                  <ProtectedRoute>
+                    <CompanyApplicationsPage />
                   </ProtectedRoute>
                 }
               />
