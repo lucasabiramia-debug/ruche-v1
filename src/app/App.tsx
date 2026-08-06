@@ -22,6 +22,7 @@ import { CreatorAssignmentsPage } from '@/pages/creator/AssignmentsPage'
 import { CreatorEarningsPage } from '@/pages/creator/EarningsPage'
 import { BriefViewPage } from '@/pages/creator/BriefViewPage'
 import { ProofSubmissionPage } from '@/pages/creator/ProofSubmissionPage'
+import { AssignmentTrackingPage } from '@/pages/creator/AssignmentTrackingPage'
 
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
@@ -92,6 +93,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CreatorAssignmentsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/creator/assignments/:assignmentId"
+                element={
+                  <ProtectedRoute>
+                    <AssignmentTrackingPage />
                   </ProtectedRoute>
                 }
               />

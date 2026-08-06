@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery } from '@tanstack/react-query'
@@ -27,7 +26,6 @@ interface Assignment {
 export function CreatorAssignmentsPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const assignmentsQuery = useQuery({
     queryKey: ['creator-assignments'],
@@ -133,38 +131,11 @@ export function CreatorAssignmentsPage() {
 
               <div className="mt-4 border-t pt-4">
                 <button
-                  onClick={() =>
-                    setExpandedId(expandedId === assignment.id ? null : assignment.id)
-                  }
-                  className="text-blue-600 hover:underline text-sm font-medium"
+                  onClick={() => navigate(`/creator/assignments/${assignment.id}`)}
+                  className="w-full rounded-lg bg-ruche-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-ruche-600 transition-colors"
                 >
-                  {expandedId === assignment.id ? '▼ Réduire' : '▶ Détails'}
+                  📍 Suivre ma mission →
                 </button>
-
-                {expandedId === assignment.id && (
-                  <div className="mt-4 space-y-4 border-t pt-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">Actions disponibles</p>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        <button
-                          onClick={() => navigate(`/creator/assignments/${assignment.id}/brief`)}
-                          className="rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
-                        >
-                          Voir le brief
-                        </button>
-                        <button
-                          onClick={() => navigate(`/creator/assignments/${assignment.id}/proof`)}
-                          className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
-                        >
-                          Soumettre du contenu
-                        </button>
-                        <button className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">
-                          Historique
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           ))}
