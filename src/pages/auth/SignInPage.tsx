@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 
 export function SignInPage() {
@@ -16,8 +16,9 @@ export function SignInPage() {
     setIsLoading(true)
 
     try {
-      await signIn(email, password)
-      navigate('/creator/dashboard')
+      const role = await signIn(email, password)
+      // Route each role to its own home
+      navigate(role === 'company' ? '/company/dashboard' : '/creator/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion')
     } finally {
@@ -26,15 +27,14 @@ export function SignInPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md space-y-6">
-      <h1 className="text-3xl font-bold">Connexion</h1>
+    <div className="mx-auto max-w-md space-y-8 py-8">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold text-gray-900">Bon retour 🐝</h1>
+        <p className="mt-2 text-gray-600">Connecte-toi à ton espace Ruche.</p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="rounded-lg bg-red-100 p-4 text-red-800">
-            {error}
-          </div>
-        )}
+        {error && <div className="rounded-lg bg-red-100 p-4 text-sm text-red-800">{error}</div>}
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -42,7 +42,7 @@ export function SignInPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-ruche-500 focus:outline-none"
             required
             disabled={isLoading}
           />
@@ -54,7 +54,7 @@ export function SignInPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2"
+            className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-ruche-500 focus:outline-none"
             required
             disabled={isLoading}
           />
@@ -63,11 +63,18 @@ export function SignInPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="w-full rounded-lg bg-ruche-500 px-4 py-3 font-semibold text-white hover:bg-ruche-600 disabled:opacity-50 transition-colors"
         >
-          {isLoading ? 'Connexion...' : 'Se connecter'}
+          {isLoading ? 'Connexion…' : 'Se connecter'}
         </button>
       </form>
+
+      <p className="text-center text-sm text-gray-600">
+        Pas encore de compte ?{' '}
+        <Link to="/auth/signup" className="font-semibold text-ruche-700 hover:underline">
+          Créer un compte
+        </Link>
+      </p>
     </div>
   )
 }
