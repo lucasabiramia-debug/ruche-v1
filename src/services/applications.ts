@@ -71,12 +71,52 @@ export async function getApplicationByMissionAndCreator(
   return data || null
 }
 
+// All applications visible to the caller (RLS scopes to their organization)
+export async function listApplications() {
+  const { data, error } = await supabase
+    .from('applications')
+    .select(
+      `
+      id,
+      mission_id,
+      creator_id,
+      status,
+      proposed_price,
+      submitted_at,
+      reviewed_at,
+      rejection_reason,
+      missions (
+        id,
+        title,
+        campaigns (
+          id,
+          title
+        )
+      ),
+      creator_profiles (
+        id,
+        bio,
+        location,
+        profile_picture_url
+      )
+    `,
+    )
+    .order('submitted_at', { ascending: false })
+
+  if (error) throw error
+
+  // Nested relations are single objects at runtime; the untyped select-string
+  // parser infers them as arrays, so the cast lets callers type the real shape
+  return data as any[]
+}
+
 export async function getApplicationsByMission(missionId: string) {
   const { data, error } = await supabase
     .from('applications')
     .select(
       `
       id,
+      mission_id,
       creator_id,
       status,
       proposed_price,

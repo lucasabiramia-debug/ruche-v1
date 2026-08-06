@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { listMissions } from '@/services/missions'
 import { getApplicationsByCreator, createApplication } from '@/services/applications'
+import { getCreatorProfile } from '@/services/creator-profiles'
+import { rankMissions, isStrongMatch, type CreatorMatchProfile } from '@/lib/matching'
 import { MissionCard } from '@/components/MissionCard'
 
 interface ApplicationState {
@@ -37,6 +39,57 @@ export function CreatorMissionsPage() {
     queryFn: () => (user ? getApplicationsByCreator(user.id) : Promise.resolve([])),
     enabled: !!user,
   })
+
+  // Creator profile feeds the matching engine
+  const profileQuery = useQuery({
+    queryKey: ['creator-profile'],
+    queryFn: () => getCreatorProfile(user!.id),
+    enabled: !!user,
+  })
+
+  // Rank missions by fit; best strong match becomes the hero recommendation
+  const { rankedMissions, heroMatch } = useMemo(() => {
+    const missions = (missionsQuery.data ?? []) as any[]
+    const profile = profileQuery.data as any
+
+    if (!profile || missions.length === 0) {
+      return { rankedMissions: missions.map((m) => ({ mission: m, match: undefined })), heroMatch: null }
+    }
+
+    const matchProfile: CreatorMatchProfile = {
+      platforms: (profile.creator_platforms ?? []).map((p: any) => ({
+        name: p.platform_name ?? '',
+        followerCount: p.follower_count ?? 0,
+      })),
+      categories: profile.preferred_categories ?? profile.categories ?? [],
+      bio: profile.bio,
+    }
+
+    const ranked = rankMissions(
+      matchProfile,
+      missions.map((m) => ({
+        ...m,
+        eligibilityRules: m.eligibility_rules ?? [],
+        campaign: m.campaigns
+          ? {
+              objective: m.campaigns.objective,
+              targetAudience: m.campaigns.target_audience,
+              description: m.campaigns.description,
+            }
+          : null,
+      })),
+    )
+
+    const hero =
+      ranked.length > 0 && isStrongMatch(ranked[0].match) && !appliedMissions.has(ranked[0].mission.id)
+        ? ranked[0]
+        : null
+
+    return {
+      rankedMissions: ranked.map((r) => ({ mission: r.mission, match: r.match })),
+      heroMatch: hero,
+    }
+  }, [missionsQuery.data, profileQuery.data, appliedMissions])
 
   // Update applied missions set when applications load
   useEffect(() => {
@@ -110,6 +163,33 @@ export function CreatorMissionsPage() {
         </div>
       </div>
 
+      {/* Hero recommendation from the matching engine */}
+      {heroMatch && (
+        <section className="rounded-2xl border border-ruche-200 bg-gradient-to-br from-ruche-50 to-white p-6">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ruche-700">
+            <span aria-hidden>✨</span> Recommandée pour toi — {heroMatch.match.score}% de compatibilité
+          </p>
+          <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{heroMatch.mission.title}</h2>
+              <ul className="mt-2 space-y-1">
+                {heroMatch.match.reasons.map((reason) => (
+                  <li key={reason} className="flex gap-2 text-sm text-gray-700">
+                    <span className="text-ruche-600">✓</span> {reason}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              onClick={() => handleApplyClick(heroMatch.mission.id)}
+              className="shrink-0 rounded-lg bg-ruche-500 px-6 py-3 font-semibold text-white shadow-sm hover:bg-ruche-600 transition-colors"
+            >
+              ⚡ J'attaque
+            </button>
+          </div>
+        </section>
+      )}
+
       {/* Missions Grid */}
       {missionsQuery.isLoading ? (
         <div className="text-center text-gray-600">Chargement des missions...</div>
@@ -117,14 +197,15 @@ export function CreatorMissionsPage() {
         <div className="rounded-lg bg-red-100 p-4 text-red-800">
           Erreur lors du chargement des missions
         </div>
-      ) : missionsQuery.data && missionsQuery.data.length > 0 ? (
+      ) : rankedMissions.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {missionsQuery.data.map((mission) => (
+          {rankedMissions.map(({ mission, match }) => (
             <MissionCard
               key={mission.id}
               mission={mission}
               isApplied={appliedMissions.has(mission.id)}
               onApplyClick={() => handleApplyClick(mission.id)}
+              matchScore={match?.score}
             />
           ))}
         </div>

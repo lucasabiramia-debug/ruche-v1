@@ -2,16 +2,23 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { getApplicationsByMission, reviewApplication } from '@/services/applications'
+import { listApplications, reviewApplication } from '@/services/applications'
+import { approveApplicationAndAssign } from '@/services/automation'
 
 interface Application {
   id: string
+  mission_id: string
   creator_id: string
   status: string
   proposed_price: number
   submitted_at: string
   reviewed_at?: string
   rejection_reason?: string
+  missions?: {
+    id: string
+    title: string
+    campaigns?: { id: string; title: string }
+  }
   creator_profiles?: {
     id: string
     bio: string
@@ -25,22 +32,26 @@ export function CompanyApplicationsPage() {
   const [reviewingId, setReviewingId] = useState<string | null>(null)
   const [rejectionReason, setRejectionReason] = useState('')
 
-  // In a real scenario, would get mission_id from route params
-  const missionId = '' // Placeholder
-
   const applicationsQuery = useQuery({
-    queryKey: ['mission-applications', missionId],
-    queryFn: () => (missionId ? getApplicationsByMission(missionId) : Promise.resolve([])),
-    enabled: !!missionId,
+    queryKey: ['company-applications'],
+    queryFn: () => listApplications(),
   })
 
   const reviewMutation = useMutation({
-    mutationFn: async (data: { applicationId: string; status: 'approved' | 'rejected' }) => {
-      return reviewApplication(
-        data.applicationId,
-        data.status,
-        data.status === 'rejected' ? rejectionReason : undefined,
-      )
+    mutationFn: async (data: {
+      application: Application
+      status: 'approved' | 'rejected'
+    }) => {
+      if (data.status === 'approved') {
+        // One click: approve + create assignment + create pending payment
+        return approveApplicationAndAssign({
+          applicationId: data.application.id,
+          missionId: data.application.mission_id,
+          creatorId: data.application.creator_id,
+          proposedPrice: data.application.proposed_price,
+        })
+      }
+      return reviewApplication(data.application.id, 'rejected', rejectionReason || undefined)
     },
     onSuccess: (_data, variables) => {
       applicationsQuery.refetch()
@@ -48,7 +59,7 @@ export function CompanyApplicationsPage() {
       setRejectionReason('')
       toast.success(
         variables.status === 'approved'
-          ? 'Candidature approuvée ! Le créateur est notifié.'
+          ? 'Candidature acceptée ! Mission assignée et paiement préparé automatiquement.'
           : 'Candidature rejetée.',
       )
     },
@@ -105,8 +116,13 @@ export function CompanyApplicationsPage() {
                       />
                     )}
                     <div>
-                      <p className="font-semibold text-gray-900">Créateur</p>
+                      <p className="font-semibold text-gray-900">
+                        {application.missions?.title || 'Mission'}
+                      </p>
                       <p className="text-sm text-gray-600">
+                        {application.missions?.campaigns?.title
+                          ? `Campagne ${application.missions.campaigns.title} · `
+                          : ''}
                         {application.creator_profiles?.location || 'Localisation inconnue'}
                       </p>
                     </div>
@@ -164,17 +180,23 @@ export function CompanyApplicationsPage() {
                 </div>
               )}
 
-              {application.status === 'submitted' && (
+              {application.status === 'submitted' && reviewingId !== application.id && (
                 <div className="mt-4 flex gap-2">
                   <button
-                    onClick={() => setReviewingId(application.id)}
-                    className="flex-1 rounded bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700"
+                    onClick={() =>
+                      reviewMutation.mutate({ application, status: 'approved' })
+                    }
+                    disabled={reviewMutation.isPending}
+                    className="flex-1 rounded-lg bg-ruche-500 px-3 py-2.5 text-sm font-semibold text-white hover:bg-ruche-600 disabled:opacity-50"
                   >
-                    Approuver
+                    {reviewMutation.isPending
+                      ? 'Mise en place…'
+                      : `✓ J'accepte (€${application.proposed_price.toLocaleString()})`}
                   </button>
                   <button
                     onClick={() => setReviewingId(application.id)}
-                    className="flex-1 rounded bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-700"
+                    disabled={reviewMutation.isPending}
+                    className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Rejeter
                   </button>
@@ -183,9 +205,9 @@ export function CompanyApplicationsPage() {
 
               {reviewingId === application.id && application.status === 'submitted' && (
                 <div className="mt-4 border-t pt-4">
-                  <p className="mb-2 text-sm font-medium">Que voulez-vous faire?</p>
+                  <p className="mb-2 text-sm font-medium">Pourquoi refuser cette candidature ?</p>
                   <textarea
-                    placeholder="Raison du rejet (optionnel)"
+                    placeholder="Raison du rejet (optionnel, visible par le créateur)"
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
@@ -194,32 +216,17 @@ export function CompanyApplicationsPage() {
                   <div className="mt-2 flex gap-2">
                     <button
                       onClick={() =>
-                        reviewMutation.mutate({
-                          applicationId: application.id,
-                          status: 'approved',
-                        })
+                        reviewMutation.mutate({ application, status: 'rejected' })
                       }
                       disabled={reviewMutation.isPending}
-                      className="flex-1 rounded bg-green-600 px-3 py-2 text-sm text-white hover:bg-green-700 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
                     >
-                      ✓ Approuver
-                    </button>
-                    <button
-                      onClick={() =>
-                        reviewMutation.mutate({
-                          applicationId: application.id,
-                          status: 'rejected',
-                        })
-                      }
-                      disabled={reviewMutation.isPending}
-                      className="flex-1 rounded bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
-                    >
-                      ✗ Rejeter
+                      Confirmer le rejet
                     </button>
                     <button
                       onClick={() => setReviewingId(null)}
                       disabled={reviewMutation.isPending}
-                      className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
+                      className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50 disabled:opacity-50"
                     >
                       Annuler
                     </button>
