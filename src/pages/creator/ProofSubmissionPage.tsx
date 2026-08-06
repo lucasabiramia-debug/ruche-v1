@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/useAuth'
 import { getAssignmentById } from '@/services/assignments'
@@ -39,7 +40,11 @@ export function ProofSubmissionPage() {
         statisticsFilePath: data.statisticsFilePath || undefined,
       }),
     onSuccess: () => {
+      toast.success('Preuve envoyée ! La marque va la valider.')
       navigate('/creator/assignments')
+    },
+    onError: () => {
+      toast.error('La soumission a échoué — vérifie les champs et réessaie.')
     },
   })
 

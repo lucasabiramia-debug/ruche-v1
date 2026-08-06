@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -41,6 +42,10 @@ export function MissionCreationForm({ campaignId, onSuccess }: MissionCreationFo
     onSuccess: () => {
       reset()
       onSuccess?.()
+      toast.success('Mission créée ! Publie-la quand elle est prête.')
+    },
+    onError: () => {
+      toast.error('La création a échoué — réessaie.')
     },
   })
 

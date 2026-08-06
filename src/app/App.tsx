@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { Toaster } from 'sonner'
 import { AuthProvider } from '@/components/AuthProvider'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { PublicLayout } from '@/layouts/PublicLayout'
@@ -40,6 +41,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <Toaster position="top-center" richColors />
         <AuthProvider>
           <Routes>
             {/* Public routes */}

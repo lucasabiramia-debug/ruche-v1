@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useMutation } from '@tanstack/react-query'
 import { publishMission, archiveMission } from '@/services/mission-management'
 
@@ -17,6 +18,10 @@ export function MissionListItem({ mission }: MissionListItemProps) {
     mutationFn: () => publishMission(mission.id),
     onSuccess: () => {
       setIsExpanded(false)
+      toast.success('Mission publiée ! Les créateurs peuvent maintenant postuler.')
+    },
+    onError: () => {
+      toast.error('La publication a échoué — réessaie.')
     },
   })
 
@@ -24,6 +29,10 @@ export function MissionListItem({ mission }: MissionListItemProps) {
     mutationFn: () => archiveMission(mission.id),
     onSuccess: () => {
       setIsExpanded(false)
+      toast.success('Mission archivée.')
+    },
+    onError: () => {
+      toast.error('L’archivage a échoué — réessaie.')
     },
   })
 

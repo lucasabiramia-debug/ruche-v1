@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { listMissions } from '@/services/missions'
@@ -53,6 +54,7 @@ export function CreatorMissionsPage() {
     onSuccess: () => {
       applicationsQuery.refetch()
       setApplicationState(null)
+      toast.success('Candidature envoyée ! La marque va l’examiner.')
     },
     onError: (err: any) => {
       setApplicationState((prev) =>

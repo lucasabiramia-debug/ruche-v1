@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { getApplicationsByMission, reviewApplication } from '@/services/applications'
@@ -41,10 +42,18 @@ export function CompanyApplicationsPage() {
         data.status === 'rejected' ? rejectionReason : undefined,
       )
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       applicationsQuery.refetch()
       setReviewingId(null)
       setRejectionReason('')
+      toast.success(
+        variables.status === 'approved'
+          ? 'Candidature approuvée ! Le créateur est notifié.'
+          : 'Candidature rejetée.',
+      )
+    },
+    onError: () => {
+      toast.error('L’action a échoué — réessaie.')
     },
   })
 
