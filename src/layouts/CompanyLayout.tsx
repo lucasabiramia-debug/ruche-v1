@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { to: '/company/dashboard', label: 'Tableau de bord' },
   { to: '/company/campaigns', label: 'Campagnes' },
   { to: '/company/applications', label: 'Candidatures' },
+  { to: '/company/map', label: '🗺️ Carte' },
   { to: '/company/invitations', label: 'Invitations' },
 ]
 

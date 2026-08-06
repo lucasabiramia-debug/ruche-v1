@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
@@ -32,6 +33,11 @@ import { CampaignDetailPage } from '@/pages/company/CampaignDetailPage'
 import { CampaignStudioPage } from '@/pages/company/CampaignStudioPage'
 import { CompanyApplicationsPage } from '@/pages/company/ApplicationsPage'
 import { CreatorProfilePage } from '@/pages/company/CreatorProfilePage'
+
+// Leaflet is heavy — load the map only when the user opens it
+const CreatorsMapPage = lazy(() =>
+  import('@/pages/company/CreatorsMapPage').then((m) => ({ default: m.CreatorsMapPage })),
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -177,6 +183,18 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <CompanyApplicationsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/company/map"
+                element={
+                  <ProtectedRoute>
+                    <Suspense
+                      fallback={<div className="h-[70vh] animate-pulse rounded-2xl bg-gray-200"></div>}
+                    >
+                      <CreatorsMapPage />
+                    </Suspense>
                   </ProtectedRoute>
                 }
               />

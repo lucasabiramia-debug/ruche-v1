@@ -31,3 +31,46 @@ body {
     @apply bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-50 dark:hover:bg-gray-600 focus-visible:ring-gray-600;
   }
 }
+
+/* Uber-style pulsing map pin (Carte Ruche) */
+.ruche-pin {
+  position: relative;
+  width: 36px;
+  height: 36px;
+}
+
+.ruche-pin-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.4);
+  animation: ruche-pulse 1.8s ease-out infinite;
+}
+
+.ruche-pin-dot {
+  position: absolute;
+  inset: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #fffbeb;
+  border: 2px solid #f59e0b;
+  font-size: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes ruche-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}

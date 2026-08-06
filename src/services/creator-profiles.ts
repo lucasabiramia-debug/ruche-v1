@@ -84,6 +84,29 @@ export async function updateCreatorProfile(creatorId: string, data: Partial<Crea
   return profile
 }
 
+// All creator profiles visible to the caller (RLS scopes access)
+export async function listCreatorProfiles() {
+  const { data, error } = await supabase
+    .from('creator_profiles')
+    .select(
+      `
+      id,
+      user_id,
+      bio,
+      location,
+      profile_picture_url,
+      creator_platforms (
+        platform_name,
+        follower_count
+      )
+    `,
+    )
+
+  if (error) throw error
+
+  return data as any[]
+}
+
 export async function getCreatorProfile(userId: string) {
   const { data: profile, error } = await supabase
     .from('creator_profiles')
