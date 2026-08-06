@@ -14,6 +14,7 @@ import { InvitationAcceptPage } from '@/pages/public/InvitationAcceptPage'
 
 // Pages - Creator
 import { CreatorDashboardPage } from '@/pages/creator/DashboardPage'
+import { CreatorOnboardingPage } from '@/pages/creator/OnboardingPage'
 
 // Pages - Company
 import { CompanyDashboardPage } from '@/pages/company/DashboardPage'
@@ -41,6 +42,14 @@ export default function App() {
 
             {/* Creator routes */}
             <Route element={<CreatorLayout />}>
+              <Route
+                path="/creator/onboarding"
+                element={
+                  <ProtectedRoute>
+                    <CreatorOnboardingPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/creator/dashboard"
                 element={
